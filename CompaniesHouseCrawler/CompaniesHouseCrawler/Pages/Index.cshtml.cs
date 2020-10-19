@@ -1,25 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CompaniesHouseCrawler.Models;
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CompaniesHouseCrawler.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private const string SearchUrlBase = "https://find-and-update.company-information.service.gov.uk/search?q=";
+
+        private readonly ILogger<IndexModel> logger;
 
         public IndexModel(ILogger<IndexModel> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
+
+        public string Name { get; set; }
 
         public void OnGet()
         {
+        }
 
+        public void OnPostSubmit(SearchModel search)
+        {
+            this.Name = search.Name;
         }
     }
 }

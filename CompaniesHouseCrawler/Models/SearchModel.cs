@@ -8,9 +8,15 @@ namespace CompaniesHouseCrawler.Models
     public class SearchModel
     {
         [BindProperty]
+        public int Depth { get; set; }
+
+        [BindProperty]
+        public int Month { get; set; }
+
+        [BindProperty]
         public string Name { get; set; }
 
         [BindProperty]
-        public int Depth { get; set; }
+        public int Year { get; set; }
     }
 }

@@ -54,7 +54,7 @@ namespace CompaniesHouseCrawler
                 return;
             }
 
-            var appointmentsLinks = officers.Select(officer => officer.Links);
+            var appointmentsLinks = officers.Select(officer => officer.Links.Self);
             var appointments = this.GetAppointments(appointmentsLinks);
             if (appointments == null)
             {
@@ -62,14 +62,26 @@ namespace CompaniesHouseCrawler
                 return;
             }
 
-            var companyNumbers = appointments.Select(appointment => appointment.AppointedTo.CompanyNumber).ToList();
-
+            var companyNumbers = appointments.Select(appointment => appointment.AppointedTo.CompanyNumber);
             var companies = this.GetCompanies(companyNumbers);
             if (companies == null)
             {
                 // TODO
                 return;
             }
+
+
+            var companyOfficers = companies.SelectMany(company => company.Officers);
+            
+            var uniqueOfficers = new Dictionary<string, OfficerListItem>();
+            foreach (OfficerListItem companyOfficer in companyOfficers)
+            {
+                uniqueOfficers.TryAdd(companyOfficer.Name, companyOfficer);
+            }
+
+            var uniqueOfficerAppointments = uniqueOfficers.Values.Select(link => link.Links.Officer.Appointments);
+            appointments = this.GetAppointments(uniqueOfficerAppointments);
+
 
             this.logger.LogInformation("Request count = {0}", this.requestCount);
         }
@@ -87,13 +99,13 @@ namespace CompaniesHouseCrawler
             return response.IsSuccessful;
         }
 
-        private List<Appointment> GetAppointments(IEnumerable<LinkSelf> appointmentsLinks)
+        private List<Appointment> GetAppointments(IEnumerable<string> appointmentsLinks)
         {
             var results = new List<Appointment>();
 
-            foreach (LinkSelf appointmentLink in appointmentsLinks)
+            foreach (string appointmentLink in appointmentsLinks)
             {
-                if (!this.ExecuteRequest(appointmentLink.Self, out IRestResponse response))
+                if (!this.ExecuteRequest(appointmentLink, out IRestResponse response))
                 {
                     continue;
                 }

@@ -1,10 +1,12 @@
 ﻿// <copyright file="Appointment.cs" company="Prime 23 Consultancy Limited">
 // Copyright © 2016-2020 Prime 23 Consultancy Limited. All rights reserved.</copyright>
 
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace CompaniesHouseCrawler.Models
 {
+    [DebuggerDisplay("A: {" + nameof(Name) + "}")]
     public class Appointment
     {
         public Address Address { get; set; }

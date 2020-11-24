@@ -10,13 +10,13 @@ namespace CompaniesHouseCrawler.Models
         public Address Address { get; set; }
 
         [JsonPropertyName("date_of_birth")]
-        public DateOfBirth DateOfBirth { get; set; }
+        public MonthYear DateOfBirth { get; set; }
 
         public string Description { get; set; }
 
         public string Kind { get; set; }
 
-        public Links Links { get; set; }
+        public LinkSelf Links { get; set; }
 
         public string Snippet { get; set; }
 

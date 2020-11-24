@@ -9,7 +9,7 @@ namespace CompaniesHouseCrawler.Models
     public class AppointmentList
     {
         [JsonPropertyName("date_of_birth")]
-        public DateOfBirth DateOfBirth { get; set; }
+        public MonthYear MonthYear { get; set; }
 
         public string eTag { get; set; }
 
@@ -23,7 +23,7 @@ namespace CompaniesHouseCrawler.Models
 
         public string Kind { get; set; }
 
-        public Links Links { get; set; }
+        public LinkSelf Links { get; set; }
 
         public string Name { get; set; }
 

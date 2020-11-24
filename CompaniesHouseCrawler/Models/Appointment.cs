@@ -26,7 +26,7 @@ namespace CompaniesHouseCrawler.Models
         [JsonPropertyName("is_pre_1992_appointment")]
         public string IsPre1992Appointment { get; set; }
 
-        public Links Links { get; set; }
+        public LinkAppointment Links { get; set; }
 
         public string Name { get; set; }
 

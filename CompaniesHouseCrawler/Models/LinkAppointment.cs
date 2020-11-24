@@ -1,12 +1,10 @@
-﻿// <copyright file="Links.cs" company="Prime 23 Consultancy Limited">
+﻿// <copyright file="LinkAppointment.cs" company="Prime 23 Consultancy Limited">
 // Copyright © 2016-2020 Prime 23 Consultancy Limited. All rights reserved.</copyright>
 
 namespace CompaniesHouseCrawler.Models
 {
-    public class Links
+    public class LinkAppointment
     {
         public string Company { get; set; }
-
-        public string Self { get; set; }
     }
 }

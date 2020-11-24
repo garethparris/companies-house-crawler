@@ -4,7 +4,6 @@
 using CompaniesHouseCrawler.Models;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace CompaniesHouseCrawler.Pages
@@ -13,11 +12,9 @@ namespace CompaniesHouseCrawler.Pages
     {
         private readonly SearchEngine searchEngine;
 
-        public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration)
+        public IndexModel(ILogger<IndexModel> logger, SearchEngine searchEngine)
         {
-            //TODO DI this
-            string apiKey = configuration["APIKey"];
-            this.searchEngine = new SearchEngine(apiKey);
+            this.searchEngine = searchEngine;
         }
 
         public string Name { get; set; }

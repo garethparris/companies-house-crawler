@@ -51,6 +51,8 @@ namespace CompaniesHouseCrawler
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+
+            services.AddScoped<SearchEngine>();
         }
     }
 }

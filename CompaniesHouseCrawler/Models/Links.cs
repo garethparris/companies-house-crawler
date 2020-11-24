@@ -5,6 +5,8 @@ namespace CompaniesHouseCrawler.Models
 {
     public class Links
     {
+        public string Company { get; set; }
+
         public string Self { get; set; }
     }
 }

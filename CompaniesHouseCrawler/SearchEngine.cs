@@ -18,10 +18,13 @@ namespace CompaniesHouseCrawler
         private const string BaseUrl = "https://api.company-information.service.gov.uk";
         private const string Resource = "search/officers";
         private readonly string apiKey;
+        private readonly JsonDeserializer jsonDeserializer;
 
         public SearchEngine(string apiKey)
         {
             this.apiKey = apiKey;
+
+            this.jsonDeserializer = new JsonDeserializer();
         }
 
         public void Execute(SearchModel search)
@@ -34,19 +37,61 @@ namespace CompaniesHouseCrawler
                 Authenticator = new HttpBasicAuthenticator(this.apiKey, string.Empty)
             };
 
+            var officers = this.GetOfficers(client, search, applyBirthMonthFilter, applyBirthYearFilter);
+            if (officers == null)
+            {
+                // TODO
+                return;
+            }
+
+            var appointmentsLinks = officers.Select(officer => officer.Links).ToList();
+
+            var appointments = this.GetAppointments(client, appointmentsLinks);
+            if (appointments == null)
+            {
+                // TODO
+                return;
+            }
+
+            //TODO get all appointments into object model
+        }
+
+        private List<Appointment> GetAppointments(IRestClient client, IEnumerable<Links> appointmentsLinks)
+        {
+            var results = new List<Appointment>();
+
+            foreach (AppointmentList appointmentList in from appointment in appointmentsLinks
+                select new RestRequest(appointment.Self, Method.GET)
+                into request
+                select client.Execute(request)
+                into response
+                where response.IsSuccessful
+                select this.jsonDeserializer.Deserialize<AppointmentList>(response))
+            {
+                results.AddRange(appointmentList.Items);
+            }
+
+            return results;
+        }
+
+        private List<Officer> GetOfficers(
+            IRestClient client,
+            SearchModel search,
+            bool applyBirthMonthFilter,
+            bool applyBirthYearFilter)
+        {
             var request = new RestRequest(Resource, Method.GET).AddParameter("q", search.Name);
             var response = client.Execute(request);
 
             if (!response.IsSuccessful)
             {
-                return;
+                return null;
             }
 
-            var jsonDeserializer = new JsonDeserializer();
-
-            var officers = jsonDeserializer.Deserialize<OfficerSearch>(response);
+            var officers = this.jsonDeserializer.Deserialize<OfficerSearch>(response);
 
             var results = new List<Officer>();
+
             var names = search.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var officer in
@@ -83,9 +128,7 @@ namespace CompaniesHouseCrawler
                 }
             }
 
-            var appointmentsLinks = results.Select(officer => officer.Links);
-
-            //TODO get all appointments into object model
+            return results;
         }
     }
 }

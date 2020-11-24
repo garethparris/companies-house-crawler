@@ -2,10 +2,12 @@
 // Copyright © 2016-2020 Prime 23 Consultancy Limited. All rights reserved.</copyright>
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace CompaniesHouseCrawler.Models
 {
+    [DebuggerDisplay("C: {" + nameof(CompanyName) + "}")]
     public class CompanyProfile
     {
         public Accounts Accounts { get; set; }
@@ -60,6 +62,8 @@ namespace CompaniesHouseCrawler.Models
         public string LastFullMembersListDate { get; set; }
 
         public LinkCompany Links { get; set; }
+
+        public List<OfficerListItem> Officers { get; } = new List<OfficerListItem>();
 
         [JsonPropertyName("partial_data_available")]
         public string PartialDataAvailable { get; set; }

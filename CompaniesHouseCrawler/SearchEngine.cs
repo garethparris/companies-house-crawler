@@ -19,10 +19,11 @@ namespace CompaniesHouseCrawler
     public class SearchEngine
     {
         private const string BaseUrl = "https://api.company-information.service.gov.uk";
+        private const string CompanyOfficerResource = "company/{0}/officers";
         private const string CompanyResource = "company/{0}";
         private const string OfficerResource = "search/officers";
-        private readonly RestClient client;
 
+        private readonly RestClient client;
         private readonly JsonDeserializer jsonDeserializer;
         private readonly ILogger<SearchEngine> logger;
 
@@ -61,7 +62,8 @@ namespace CompaniesHouseCrawler
                 return;
             }
 
-            var companyNumbers = appointments.Select(appointment => appointment.AppointedTo.CompanyNumber);
+            var companyNumbers = appointments.Select(appointment => appointment.AppointedTo.CompanyNumber).ToList();
+
             var companies = this.GetCompanies(companyNumbers);
             if (companies == null)
             {
@@ -89,9 +91,9 @@ namespace CompaniesHouseCrawler
         {
             var results = new List<Appointment>();
 
-            foreach (LinkSelf appointment in appointmentsLinks)
+            foreach (LinkSelf appointmentLink in appointmentsLinks)
             {
-                if (!this.ExecuteRequest(appointment.Self, out IRestResponse response))
+                if (!this.ExecuteRequest(appointmentLink.Self, out IRestResponse response))
                 {
                     continue;
                 }
@@ -110,7 +112,6 @@ namespace CompaniesHouseCrawler
             foreach (string companyNumber in companyNumbers)
             {
                 string resource = string.Format(CompanyResource, companyNumber);
-
                 if (!this.ExecuteRequest(resource, out IRestResponse response))
                 {
                     continue;
@@ -118,6 +119,24 @@ namespace CompaniesHouseCrawler
 
                 CompanyProfile profile = this.jsonDeserializer.Deserialize<CompanyProfile>(response);
                 results.Add(profile);
+
+                var officers = this.GetOfficers(companyNumber);
+                profile.Officers.AddRange(officers);
+            }
+
+            return results;
+        }
+
+        private IEnumerable<OfficerListItem> GetOfficers(string companyNumber)
+        {
+            var results = new List<OfficerListItem>();
+
+            string resource = string.Format(CompanyOfficerResource, companyNumber);
+
+            if (this.ExecuteRequest(resource, out IRestResponse response))
+            {
+                OfficerList officerList = this.jsonDeserializer.Deserialize<OfficerList>(response);
+                results.AddRange(officerList.Items);
             }
 
             return results;
@@ -127,11 +146,6 @@ namespace CompaniesHouseCrawler
         {
             IRestRequest request = new RestRequest(OfficerResource, Method.GET).AddParameter("q", search.Name);
             if (!this.ExecuteRequest(request, out IRestResponse response))
-            {
-                return null;
-            }
-
-            if (!response.IsSuccessful)
             {
                 return null;
             }

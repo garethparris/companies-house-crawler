@@ -1,4 +1,4 @@
-﻿// <copyright file="AppointmentList.cs" company="Prime 23 Consultancy Limited">
+﻿// <copyright file="OfficerList.cs" company="Prime 23 Consultancy Limited">
 // Copyright © 2016-2020 Prime 23 Consultancy Limited. All rights reserved.</copyright>
 
 using System.Collections.Generic;
@@ -6,26 +6,25 @@ using System.Text.Json.Serialization;
 
 namespace CompaniesHouseCrawler.Models
 {
-    public class AppointmentList
+    internal class OfficerList
     {
+        [JsonPropertyName("active_count")]
+        public int ActiveCount { get; set; }
+
         public string eTag { get; set; }
 
-        [JsonPropertyName("is_corporate_officer")]
-        public string IsCorporateOfficer { get; set; }
+        [JsonPropertyName("inactive_count")]
+        public int InactiveCount { get; set; }
 
-        public List<Appointment> Items { get; set; }
+        public List<OfficerListItem> Items { get; set; }
 
         [JsonPropertyName("items_per_page")]
         public int ItemsPerPage { get; set; }
 
         public string Kind { get; set; }
 
-        public LinkSelf Links { get; set; }
-
-        [JsonPropertyName("date_of_birth")]
-        public MonthYear MonthYear { get; set; }
-
-        public string Name { get; set; }
+        [JsonPropertyName("resigned_count")]
+        public int ResignedCount { get; set; }
 
         [JsonPropertyName("start_index")]
         public int StartIndex { get; set; }

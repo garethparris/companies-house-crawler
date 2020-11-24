@@ -45,6 +45,21 @@ namespace CompaniesHouseCrawler
 
         public void Execute(SearchModel search)
         {
+
+
+
+
+
+            //TODO
+            // Tidy and refactor this into re-usable/recursive code.
+            // Start logging the output in a sensible format.
+            // Validate results with CH.
+
+
+
+
+
+
             this.requestCount = 0;
 
             var officers = this.GetOfficers(search);
@@ -70,9 +85,8 @@ namespace CompaniesHouseCrawler
                 return;
             }
 
-
             var companyOfficers = companies.SelectMany(company => company.Officers);
-            
+
             var uniqueOfficers = new Dictionary<string, OfficerListItem>();
             foreach (OfficerListItem companyOfficer in companyOfficers)
             {
@@ -81,7 +95,6 @@ namespace CompaniesHouseCrawler
 
             var uniqueOfficerAppointments = uniqueOfficers.Values.Select(link => link.Links.Officer.Appointments);
             appointments = this.GetAppointments(uniqueOfficerAppointments);
-
 
             this.logger.LogInformation("Request count = {0}", this.requestCount);
         }
